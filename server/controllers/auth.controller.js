@@ -1,4 +1,4 @@
-import User from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -15,7 +15,7 @@ export const register = async (req, res) => {
 
     // check whether already user created with this email id
 
-    const user = await User.findById(email);
+    const user = await User.findOne({ email });
     if (user) {
       return res.status(401).json({
         message: "Email Already Taken.",
@@ -92,6 +92,21 @@ export const login = async (req, res) => {
     console.log(`error in login ${error}`);
     return res.status(500).json({
       message: "Internal Server Error.",
+      success: false,
+    });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    return res.cookie({ token: "" }, { maxAge: 0 }).json({
+      message: "Logged Out Successfully...",
+    });
+  } catch (error) {
+    console.log(`error in logout controller ${error}`);
+
+    return res.status(500).json({
+      message: "Internal Server error...",
       success: false,
     });
   }
